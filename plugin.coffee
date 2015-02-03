@@ -19,21 +19,14 @@ module.exports = (env, callback) ->
         options.paths = [path.dirname(@filepath.full)]
         # less throws errors all over the place...
         async.waterfall [
-          (callback) ->
+          (callback) =>
             try
-              parser = new less.Parser options
-              callback null, parser
+              less.render(@source, options, callback)
             catch error
               callback error
-          (parser, callback) =>
+          (output, callback) =>
             try
-              parser.parse @source, callback
-            catch error
-              callback error
-          (root, callback) ->
-            try
-              result = root.toCSS options
-              callback null, new Buffer result
+              callback null, new Buffer(output.css)
             catch error
               callback error
         ], callback
